@@ -120,6 +120,7 @@ export const projects: Project[] = [
       'Built the 20-slide presentation deck covering architecture, smart contracts, patient consent models, security and regulatory compliance.',
     ],
     stack: ['React', 'Node.js', 'Express', 'Smart contracts', 'Permissioned blockchain'],
+    repo: 'https://github.com/akshat-singh05/carechain',
     unknowns: 'The accompanying paper is a draft and has not been published.',
     diagram: 'carechain',
     hasPage: true,
