@@ -1,0 +1,32 @@
+export const profile = {
+  name: 'Akshat Singh',
+  firstName: 'Akshat',
+  lastName: 'Singh',
+  university: 'Vellore Institute of Technology (VIT), Vellore',
+  universityShort: 'VIT Vellore',
+  degree: 'B.Tech, Computer Science and Engineering',
+  specialisation: 'Blockchain Technology',
+  startYear: 2023,
+  endYear: 2027,
+  period: 'August 2023 to May 2027',
+  semesterNote: '7th semester as of September 2026',
+  headline: 'I build backend systems and AI applications, and write up the architecture behind them.',
+  intro:
+    "I'm a Computer Science student at VIT Vellore specialising in blockchain. My work spans agent-based software, machine learning for CI/CD, decentralized healthcare records and post-quantum consensus. This summer I interned on the Axiom team at Saxo Group India, building documentation and chatbot tools.",
+  interests: [
+    'AI and agentic systems',
+    'LLMs and generative AI',
+    'machine learning and predictive analytics',
+    'blockchain and Web3',
+    'cybersecurity and cryptography',
+    'backend engineering',
+    'CI/CD and automation',
+    'distributed systems',
+    'data science',
+  ],
+  email: 'akshatsingh1703@gmail.com',
+  github: 'https://github.com/akshat-singh05',
+  linkedin: 'https://www.linkedin.com/in/akshat-singh-455015294/',
+  /** Served from public/. The Resume link only renders when the file exists at build time. */
+  resumeFile: 'resume.pdf',
+} as const;

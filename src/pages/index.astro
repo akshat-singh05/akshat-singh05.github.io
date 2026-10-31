@@ -1,0 +1,241 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Row from '../components/Row.astro';
+import Tags from '../components/Tags.astro';
+import { profile } from '../data/profile';
+import { projects } from '../data/projects';
+import { papers, researchNote } from '../data/research';
+import { jobs } from '../data/experience';
+import { skillGroups } from '../data/skills';
+import { url } from '../lib/url';
+
+const hasResume = fs.existsSync(path.join(process.cwd(), 'public', profile.resumeFile));
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  url: new URL(import.meta.env.BASE_URL, Astro.site).href,
+  email: `mailto:${profile.email}`,
+  sameAs: [profile.github, profile.linkedin],
+  affiliation: { '@type': 'CollegeOrUniversity', name: profile.university },
+  knowsAbout: profile.interests,
+};
+---
+<BaseLayout
+  title={`${profile.name} · Backend systems and AI applications`}
+  description={`${profile.name}, B.Tech CSE (Blockchain Technology) student at ${profile.universityShort}. Projects, papers and experience in backend systems, AI applications and blockchain.`}
+  jsonLd={jsonLd}
+>
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <p class="hero__block">
+      <span>block <b>{profile.endYear}</b></span>
+      <span>parent <b>{profile.startYear}</b></span>
+      <span>{profile.universityShort} · B.Tech CSE, {profile.specialisation}</span>
+    </p>
+    <h1 id="hero-title">
+      <span>{profile.firstName}</span>
+      <span class="surname">{profile.lastName}</span>
+    </h1>
+    <p class="hero__headline">{profile.headline}</p>
+    <p class="hero__intro">{profile.intro}</p>
+    <div class="hero__meta">
+      <dl>
+        <dt>Study</dt>
+        <dd>
+          {profile.degree}, {profile.specialisation} specialisation. {profile.university}, {profile.period}
+          ({profile.semesterNote}).
+        </dd>
+        <dt>Interests</dt>
+        <dd>{profile.interests.join(', ')}.</dd>
+        <dt>Elsewhere</dt>
+        <dd>
+          <ul class="links">
+            <li><a href={`mailto:${profile.email}`}>Email</a></li>
+            <li><a href={profile.github}>GitHub</a></li>
+            <li><a href={profile.linkedin}>LinkedIn</a></li>
+            {hasResume && <li><a href={url(`/${profile.resumeFile}`)}>Resume (PDF)</a></li>}
+          </ul>
+        </dd>
+      </dl>
+    </div>
+  </section>
+
+  <section id="projects" class="section wrap" aria-labelledby="projects-title">
+    <div class="section__head">
+      <h2 id="projects-title">Projects</h2>
+    </div>
+    <ul class="rows">
+      {projects.map((p) => (
+        <Row record={p.record} status={p.status}>
+          <h3>{p.hasPage ? <a href={url(`/projects/${p.slug}/`)}>{p.title}</a> : p.title}</h3>
+          <p class="row__context">{p.context}</p>
+          <p>{p.summary}</p>
+          {p.items && (
+            <ul class="row__list">
+              {p.items.map((item) => <li>{item}</li>)}
+            </ul>
+          )}
+          <Tags items={p.stack} label={`${p.title} technologies`} />
+          {(p.hasPage || p.repo) && (
+            <p class="row__links">
+              {p.hasPage && <a href={url(`/projects/${p.slug}/`)}>Architecture and details<span class="visually-hidden">: {p.title}</span></a>}
+              {p.repo && <a href={p.repo}>Repository<span class="visually-hidden">: {p.title}</span></a>}
+            </p>
+          )}
+        </Row>
+      ))}
+    </ul>
+  </section>
+
+  <section id="research" class="section wrap" aria-labelledby="research-title">
+    <div class="section__head">
+      <h2 id="research-title">Research and papers</h2>
+      <p class="section__note">{researchNote}</p>
+    </div>
+    <ul class="rows">
+      {papers.map((paper) => (
+        <Row record={paper.record} status={paper.status}>
+          <h3>{paper.title}</h3>
+          {paper.context && <p class="row__context">{paper.context}</p>}
+          <p>{paper.summary}</p>
+          {paper.tags && <Tags items={paper.tags} label={`${paper.title} topics`} />}
+          {paper.projectSlug && (
+            <p class="row__links">
+              <a href={url(`/projects/${paper.projectSlug}/`)}>Related project page<span class="visually-hidden">: {paper.title}</span></a>
+            </p>
+          )}
+        </Row>
+      ))}
+    </ul>
+  </section>
+
+  <section id="experience" class="section wrap" aria-labelledby="experience-title">
+    <div class="section__head">
+      <h2 id="experience-title">Experience</h2>
+    </div>
+    <ul class="rows">
+      {jobs.map((job) => (
+        <Row record={job.record}>
+          <h3>{job.role}, {job.org}</h3>
+          <p class="row__context">
+            {[job.team, job.dates, job.location].filter(Boolean).join(' · ')}
+          </p>
+          <p>{job.summary}</p>
+          {job.items && (
+            <ul class="row__list">
+              {job.items.map((item) => (
+                <li>
+                  <strong>{item.name}.</strong> {item.text}
+                </li>
+              ))}
+            </ul>
+          )}
+          {job.credential && <p class="row__context mono">Credential ID {job.credential}</p>}
+        </Row>
+      ))}
+    </ul>
+  </section>
+
+  <section id="skills" class="section wrap" aria-labelledby="skills-title">
+    <div class="section__head">
+      <h2 id="skills-title">Skills</h2>
+    </div>
+    <div class="filters" role="group" aria-label="Filter skills by group" data-skill-filters hidden>
+      <button type="button" class="chip" aria-pressed="true" data-filter="all">All</button>
+      {skillGroups.map((g) => (
+        <button type="button" class="chip" aria-pressed="false" data-filter={g.id}>{g.label}</button>
+      ))}
+    </div>
+    <ul class="rows">
+      {skillGroups.map((g) => (
+        <li class="row skill-group" data-group={g.id}>
+          <div class="row__record">
+            <h3 class="skill-group__title">{g.label}</h3>
+          </div>
+          <div class="row__body">
+            <Tags items={g.items} label={g.label} />
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section id="contact" class="section wrap" aria-labelledby="contact-title">
+    <div class="section__head">
+      <h2 id="contact-title">Contact</h2>
+    </div>
+    <ul class="rows">
+      <li class="row">
+        <div class="row__record"><span>Email</span></div>
+        <div class="row__body">
+          <div class="contact-email">
+            <span class="contact-email__text" id="email-text">{profile.email}</span>
+            <button type="button" class="button" data-copy-email hidden>Copy email</button>
+            <span class="visually-hidden" role="status" aria-live="polite" data-copy-status></span>
+          </div>
+        </div>
+      </li>
+      <li class="row">
+        <div class="row__record"><span>Profiles</span></div>
+        <div class="row__body">
+          <ul class="links">
+            <li><a href={profile.github}>github.com/akshat-singh05</a></li>
+            <li><a href={profile.linkedin}>LinkedIn</a></li>
+            {hasResume && <li><a href={url(`/${profile.resumeFile}`)}>Resume (PDF)</a></li>}
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<script>
+  // Skills filter
+  const bar = document.querySelector<HTMLElement>('[data-skill-filters]');
+  if (bar) {
+    const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-group]'));
+    bar.hidden = false;
+    bar.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+      if (!button) return;
+      const filter = button.dataset.filter;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+      groups.forEach((g) => {
+        g.hidden = filter !== 'all' && g.dataset.group !== filter;
+      });
+    });
+  }
+
+  // Copy email
+  const copy = document.querySelector<HTMLButtonElement>('[data-copy-email]');
+  const text = document.getElementById('email-text');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+  if (copy && text && status) {
+    copy.hidden = false;
+    const selectText = () => {
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    };
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(text.textContent?.trim() ?? '');
+        copy.textContent = 'Copied';
+        status.textContent = 'Email address copied to clipboard.';
+      } catch {
+        selectText();
+        copy.textContent = 'Selected, press Ctrl+C';
+        status.textContent = 'Could not copy automatically. The address is selected.';
+      }
+      window.setTimeout(() => {
+        copy.textContent = 'Copy email';
+      }, 2500);
+    });
+  }
+</script>

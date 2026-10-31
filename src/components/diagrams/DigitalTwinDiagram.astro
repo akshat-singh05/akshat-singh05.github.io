@@ -1,0 +1,64 @@
+---
+// Layered backend of the Agentic Digital Twin. Labels are the real module names.
+const modules = [
+  { name: 'Usage Analyzer', sub: 'usage patterns' },
+  { name: 'Negotiation Agent', sub: 'service options' },
+  { name: 'Plan Switching', sub: 'plan changes' },
+  { name: 'Privacy Mediator', sub: 'privacy controls' },
+  { name: 'Audit Logger', sub: 'decision record' },
+];
+const w = 132;
+const gap = 10;
+const x0 = 30;
+---
+<svg viewBox="0 0 760 500" role="img" aria-labelledby="dt-title" xmlns="http://www.w3.org/2000/svg">
+  <title id="dt-title">Agentic Digital Twin backend layers</title>
+  <defs>
+    <marker id="dt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="dg-arrow" d="M0 0 L10 5 L0 10 z" />
+    </marker>
+  </defs>
+
+  <rect class="dg-box dg-box--accent" x="280" y="20" width="200" height="52" rx="3" />
+  <text class="dg-label" x="380" y="43" text-anchor="middle">Web Dashboard</text>
+  <text class="dg-sub" x="380" y="61" text-anchor="middle">interface</text>
+
+  <path class="dg-edge" d="M380 72 V108" marker-end="url(#dt-arrow)" />
+  <text class="dg-sub" x="390" y="95">REST</text>
+
+  <rect class="dg-box" x="230" y="110" width="300" height="52" rx="3" />
+  <text class="dg-label" x="380" y="133" text-anchor="middle">API routes</text>
+  <text class="dg-sub" x="380" y="151" text-anchor="middle">FastAPI</text>
+
+  <path class="dg-edge dg-edge--dashed" d="M530 136 H570" />
+  <rect class="dg-box" x="570" y="110" width="170" height="52" rx="3" />
+  <text class="dg-label" x="655" y="133" text-anchor="middle">Pydantic schemas</text>
+  <text class="dg-sub" x="655" y="151" text-anchor="middle">validation</text>
+
+  <path class="dg-edge" d="M380 162 V198" marker-end="url(#dt-arrow)" />
+
+  <rect class="dg-box" x="230" y="200" width="300" height="52" rx="3" />
+  <text class="dg-label" x="380" y="223" text-anchor="middle">Service layer</text>
+  <text class="dg-sub" x="380" y="241" text-anchor="middle">services</text>
+
+  <path class="dg-edge" d="M380 252 V288" marker-end="url(#dt-arrow)" />
+
+  <rect class="dg-group" x="20" y="290" width="720" height="108" rx="3" />
+  <text class="dg-tag" x="32" y="308">agent and analysis modules</text>
+  {modules.map((m, i) => {
+    const x = x0 + i * (w + gap);
+    return (
+      <g>
+        <rect class="dg-box dg-box--accent" x={x} y="318" width={w} height="64" rx="3" />
+        <text class="dg-label" x={x + w / 2} y="345" text-anchor="middle" style="font-size: 13px">{m.name}</text>
+        <text class="dg-sub" x={x + w / 2} y="364" text-anchor="middle">{m.sub}</text>
+      </g>
+    );
+  })}
+
+  <path class="dg-edge" d="M380 398 V434" marker-end="url(#dt-arrow)" />
+
+  <rect class="dg-box" x="230" y="436" width="300" height="52" rx="3" />
+  <text class="dg-label" x="380" y="459" text-anchor="middle">Database models</text>
+  <text class="dg-sub" x="380" y="477" text-anchor="middle">SQLAlchemy</text>
+</svg>

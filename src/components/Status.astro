@@ -1,0 +1,8 @@
+---
+import type { Status } from '../data/types';
+interface Props {
+  status: Status;
+}
+const { status } = Astro.props;
+---
+<span class={`status status--${status.kind}`}><span class="status__dot" aria-hidden="true"></span>{status.label}</span>

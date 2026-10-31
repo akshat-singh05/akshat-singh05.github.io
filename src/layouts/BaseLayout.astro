@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { profile } from '../data/profile';
+import { url } from '../lib/url';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Adds the "Back to projects" link above the page content. */
+  backLink?: boolean;
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+}
+
+const { title, description, backLink = false, jsonLd, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const home = url('/');
+const sections = [
+  { id: 'projects', label: 'Projects' },
+  { id: 'research', label: 'Research' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'contact', label: 'Contact' },
+];
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="author" content={profile.name} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F2F4F9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0C1020" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={url('/sitemap-index.xml')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={fonts} />
+
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="topbar">
+      <div class="wrap topbar__inner">
+        <nav aria-label="Sections">
+          <ul>
+            {sections.map((s) => (
+              <li>
+                <a href={`${home}#${s.id}`}>{s.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <ThemeToggle />
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      {backLink && (
+        <div class="wrap" style="padding-top: 1.75rem">
+          <a class="back-link" href={`${home}#projects`}>Back to projects</a>
+        </div>
+      )}
+      <slot />
+    </main>
+    <footer class="footer">
+      <div class="wrap footer__inner">
+        <p>{profile.name}</p>
+        <p>{profile.universityShort} · CSE ({profile.specialisation}) · {profile.startYear}–{profile.endYear}</p>
+      </div>
+    </footer>
+  </body>
+</html>

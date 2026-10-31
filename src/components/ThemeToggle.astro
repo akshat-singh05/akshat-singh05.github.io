@@ -1,0 +1,29 @@
+<button type="button" class="theme-toggle" aria-pressed="false" data-theme-toggle>
+  <span class="theme-toggle__mark" aria-hidden="true"></span>
+  Dark theme
+</button>
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var button = document.querySelector('[data-theme-toggle]');
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    function current() {
+      var set = root.getAttribute('data-theme');
+      if (set === 'light' || set === 'dark') return set;
+      return media.matches ? 'dark' : 'light';
+    }
+    function sync() {
+      button.setAttribute('aria-pressed', current() === 'dark' ? 'true' : 'false');
+    }
+    button.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem('theme', next);
+      } catch (e) {}
+      sync();
+    });
+    media.addEventListener('change', sync);
+    sync();
+  })();
+</script>

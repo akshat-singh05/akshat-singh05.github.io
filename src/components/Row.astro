@@ -1,0 +1,18 @@
+---
+import type { Status as StatusT } from '../data/types';
+import Status from './Status.astro';
+interface Props {
+  record: string;
+  status?: StatusT;
+}
+const { record, status } = Astro.props;
+---
+<li class="row">
+  <div class="row__record">
+    <span>{record}</span>
+    {status && <Status status={status} />}
+  </div>
+  <div class="row__body">
+    <slot />
+  </div>
+</li>

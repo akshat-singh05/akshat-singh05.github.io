@@ -1,0 +1,59 @@
+---
+// Proposed seven-stage loop for the GitHub Actions optimiser. Dashed boxes mark proposed stages.
+const top = [
+  { n: '01', name: 'Collect', sub: ['repository and', 'workflow information'] },
+  { n: '02', name: 'Dependency graph', sub: ['graph of', 'workflow jobs'] },
+  { n: '03', name: 'Feature extraction', sub: ['execution time,', 'failures, cache misses'] },
+  { n: '04', name: 'ML prediction', sub: ['job behaviour'] },
+];
+const bottom = [
+  { n: '05', name: 'DAG scheduler', sub: ['job scheduling'], x: 579 },
+  { n: '06', name: 'Workflow generator', sub: ['optimised GitHub', 'Actions YAML'], x: 393 },
+  { n: '07', name: 'Execution feedback', sub: ['results back', 'into the model'], x: 207 },
+];
+const w = 160;
+const h = 82;
+const topX = [21, 207, 393, 579];
+---
+<svg viewBox="0 0 760 340" role="img" aria-labelledby="gha-title" xmlns="http://www.w3.org/2000/svg">
+  <title id="gha-title">Proposed GitHub Actions optimiser pipeline</title>
+  <defs>
+    <marker id="gha-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="dg-arrow" d="M0 0 L10 5 L0 10 z" />
+    </marker>
+  </defs>
+
+  <text class="dg-tag" x="21" y="30">proposed architecture</text>
+
+  {top.map((s, i) => (
+    <g>
+      <rect class="dg-box dg-box--proposed" x={topX[i]} y="50" width={w} height={h} rx="3" />
+      <text class="dg-sub" x={topX[i] + 10} y="67">{s.n}</text>
+      <text class="dg-label" x={topX[i] + w / 2} y="88" text-anchor="middle">{s.name}</text>
+      {s.sub.map((line, j) => (
+        <text class="dg-sub" x={topX[i] + w / 2} y={106 + j * 14} text-anchor="middle">{line}</text>
+      ))}
+    </g>
+  ))}
+  {[0, 1, 2].map((i) => (
+    <path class="dg-edge" d={`M${topX[i] + w} 91 H${topX[i + 1] - 2}`} marker-end="url(#gha-arrow)" />
+  ))}
+
+  <path class="dg-edge" d="M680 132 V218" marker-end="url(#gha-arrow)" />
+
+  {bottom.map((s) => (
+    <g>
+      <rect class="dg-box dg-box--proposed" x={s.x} y="220" width={w} height={h} rx="3" />
+      <text class="dg-sub" x={s.x + 10} y="237">{s.n}</text>
+      <text class="dg-label" x={s.x + w / 2} y="258" text-anchor="middle">{s.name}</text>
+      {s.sub.map((line, j) => (
+        <text class="dg-sub" x={s.x + w / 2} y={276 + j * 14} text-anchor="middle">{line}</text>
+      ))}
+    </g>
+  ))}
+  <path class="dg-edge" d="M579 261 H555" marker-end="url(#gha-arrow)" />
+  <path class="dg-edge" d="M393 261 H369" marker-end="url(#gha-arrow)" />
+
+  <path class="dg-edge dg-edge--dashed" d="M207 261 H120 V176 H630 V134" marker-end="url(#gha-arrow)" />
+  <text class="dg-tag" x="128" y="168">feedback loop</text>
+</svg>

@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Status from '../../components/Status.astro';
+import Tags from '../../components/Tags.astro';
+import Figure from '../../components/Figure.astro';
+import DigitalTwinDiagram from '../../components/diagrams/DigitalTwinDiagram.astro';
+import GhaOptimizerDiagram from '../../components/diagrams/GhaOptimizerDiagram.astro';
+import CareChainDiagram from '../../components/diagrams/CareChainDiagram.astro';
+import { projects, type DiagramId, type Project } from '../../data/projects';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return projects.filter((p) => p.hasPage).map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+
+const diagrams: Record<DiagramId, { component: typeof DigitalTwinDiagram; label: string; caption: string }> = {
+  'digital-twin': {
+    component: DigitalTwinDiagram,
+    label: 'Agentic Digital Twin architecture diagram',
+    caption:
+      'The web dashboard calls REST routes built with FastAPI, which validate data with Pydantic schemas and pass work to the service layer. The service layer drives the agent and analysis modules (Usage Analyzer, Negotiation Agent, Plan Switching, Privacy Mediator, Audit Logger), which work with the SQLAlchemy database models.',
+  },
+  'gha-optimizer': {
+    component: GhaOptimizerDiagram,
+    label: 'Proposed GitHub Actions optimiser architecture diagram',
+    caption:
+      'Proposed architecture. Repository and workflow information is collected, turned into dependency graphs of workflow jobs, and reduced to features such as execution time, failures and cache misses. A machine learning model predicts job behaviour, a DAG-based scheduler orders the jobs, and the system generates an optimised GitHub Actions YAML workflow. Execution results feed back into the model.',
+  },
+  carechain: {
+    component: CareChainDiagram,
+    label: 'CareChain architecture diagram',
+    caption:
+      'Patients use a React frontend backed by a Node.js and Express server. Consent and access decisions are held in smart contracts on a permissioned blockchain. The records stay encrypted in off-chain storage and are referenced on the chain by cryptographic hash.',
+  },
+};
+
+const diagram = project.diagram ? diagrams[project.diagram] : undefined;
+const Diagram = diagram?.component;
+const overview = project.overview ?? [project.summary];
+const description = `${project.title}: ${project.summary}`.slice(0, 158).replace(/\s+\S*$/, '') + '…';
+---
+<BaseLayout title={`${project.title} · Akshat Singh`} description={description} backLink>
+  <article class="wrap">
+    <header class="detail-head">
+      <p class="mono muted" style="font-size: 0.8125rem">{project.record}</p>
+      <h1>{project.title}</h1>
+      {project.fullTitle && <p class="detail-head__full">{project.fullTitle}</p>}
+      <div class="detail-head__meta">
+        <Status status={project.status} />
+        <span>{project.context}</span>
+      </div>
+    </header>
+
+    <section class="detail-section" aria-labelledby="overview">
+      <h2 id="overview">Overview</h2>
+      <div class="detail-section__body">
+        {overview.map((para) => <p>{para}</p>)}
+        {project.modules && (
+          <dl class="module-list">
+            {project.modules.map((m) => (
+              <div>
+                <dt>{m.name}</dt>
+                <dd>{m.text}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
+    </section>
+
+    {project.contributions && (
+      <section class="detail-section" aria-labelledby="built">
+        <h2 id="built">What I built</h2>
+        <div class="detail-section__body">
+          <ul class="row__list">
+            {project.contributions.map((c) => <li>{c}</li>)}
+          </ul>
+        </div>
+      </section>
+    )}
+
+    {Diagram && diagram && (
+      <section class="detail-section detail-section--stacked" aria-labelledby="architecture">
+        <h2 id="architecture">Architecture</h2>
+        <div class="detail-section__body detail-section__body--wide">
+          <Figure label={diagram.label} caption={diagram.caption}>
+            <Diagram />
+          </Figure>
+        </div>
+      </section>
+    )}
+
+    <section class="detail-section" aria-labelledby="stack">
+      <h2 id="stack">Technology</h2>
+      <div class="detail-section__body">
+        <Tags items={project.stack} />
+      </div>
+    </section>
+
+    {project.repo && (
+      <section class="detail-section" aria-labelledby="repo">
+        <h2 id="repo">Repository</h2>
+        <div class="detail-section__body">
+          <p class="mono"><a href={project.repo}>{project.repo.replace('https://', '')}</a></p>
+        </div>
+      </section>
+    )}
+
+    {project.screenshots && project.screenshots.length > 0 && (
+      <section class="detail-section" aria-labelledby="screens">
+        <h2 id="screens">Screenshots</h2>
+        <div class="detail-section__body detail-section__body--wide">
+          {project.screenshots.map((s) => (
+            <img src={url(s.src)} alt={s.alt} loading="lazy" style="max-width: 100%; height: auto" />
+          ))}
+        </div>
+      </section>
+    )}
+
+    {project.unknowns && (
+      <section class="detail-section" aria-labelledby="unknowns">
+        <h2 id="unknowns">What is not yet known or measured</h2>
+        <div class="detail-section__body">
+          <p>{project.unknowns}</p>
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>

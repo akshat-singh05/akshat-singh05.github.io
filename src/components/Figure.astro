@@ -1,0 +1,13 @@
+---
+interface Props {
+  label: string;
+  caption: string;
+}
+const { label, caption } = Astro.props;
+---
+<figure class="figure">
+  <div class="figure__scroll" role="region" aria-label={`${label} (scrolls sideways on narrow screens)`} tabindex="0">
+    <slot />
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>
