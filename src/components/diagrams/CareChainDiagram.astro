@@ -1,7 +1,14 @@
 ---
-// CareChain: consent and access on a permissioned chain, records encrypted off-chain.
+// CareChain: five contracts on a local Hardhat chain, records encrypted off-chain. Names match the repository.
+const contracts = [
+  { name: 'CareChainRegistry', sub: 'identities and roles', x: 36, y: 206, w: 150 },
+  { name: 'ConsentManager', sub: 'ABAC consent', x: 196, y: 206, w: 150 },
+  { name: 'RecordAnchor', sub: 'hashes, Merkle roots', x: 356, y: 206, w: 150 },
+  { name: 'EmergencyAccess', sub: 'break-glass', x: 36, y: 300, w: 150 },
+  { name: 'AuditLog', sub: 'append-only trail', x: 196, y: 300, w: 310 },
+];
 ---
-<svg viewBox="0 0 760 420" role="img" aria-labelledby="cc-title" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 760 400" role="img" aria-labelledby="cc-title" xmlns="http://www.w3.org/2000/svg">
   <title id="cc-title">CareChain architecture</title>
   <defs>
     <marker id="cc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -10,42 +17,44 @@
   </defs>
 
   <rect class="dg-box" x="20" y="30" width="150" height="60" rx="3" />
-  <text class="dg-label" x="95" y="56" text-anchor="middle">Patient</text>
-  <text class="dg-sub" x="95" y="74" text-anchor="middle">controls who reads</text>
+  <text class="dg-label" x="95" y="56" text-anchor="middle">Users</text>
+  <text class="dg-sub" x="95" y="74" text-anchor="middle">five roles</text>
 
   <path class="dg-edge" d="M170 60 H218" marker-end="url(#cc-arrow)" />
 
-  <rect class="dg-box" x="220" y="30" width="180" height="60" rx="3" />
-  <text class="dg-label" x="310" y="56" text-anchor="middle">React frontend</text>
-  <text class="dg-sub" x="310" y="74" text-anchor="middle">web client</text>
+  <rect class="dg-box" x="220" y="30" width="170" height="60" rx="3" />
+  <text class="dg-label" x="305" y="56" text-anchor="middle">React front end</text>
+  <text class="dg-sub" x="305" y="74" text-anchor="middle">Vite</text>
 
-  <path class="dg-edge" d="M400 60 H448" marker-end="url(#cc-arrow)" />
+  <path class="dg-edge" d="M390 60 H438" marker-end="url(#cc-arrow)" />
 
-  <rect class="dg-box" x="450" y="30" width="290" height="60" rx="3" />
-  <text class="dg-label" x="595" y="56" text-anchor="middle">Node.js + Express</text>
-  <text class="dg-sub" x="595" y="74" text-anchor="middle">backend</text>
+  <rect class="dg-box" x="440" y="30" width="300" height="60" rx="3" />
+  <text class="dg-label" x="590" y="56" text-anchor="middle">Express API</text>
+  <text class="dg-sub" x="590" y="74" text-anchor="middle">JWT roles · AES-256-GCM · ethers.js</text>
 
-  <path class="dg-edge" d="M520 90 V130 H230 V198" marker-end="url(#cc-arrow)" />
-  <text class="dg-tag" x="250" y="152">consent and access</text>
-  <path class="dg-edge" d="M660 90 V198" marker-end="url(#cc-arrow)" />
-  <text class="dg-tag" x="670" y="152">records</text>
+  <path class="dg-edge" d="M500 90 V128 H271 V170" marker-end="url(#cc-arrow)" />
+  <text class="dg-tag" x="282" y="150">contract calls</text>
+  <path class="dg-edge" d="M650 90 V204" marker-end="url(#cc-arrow)" />
+  <text class="dg-tag" x="642" y="150" text-anchor="end">encrypted records</text>
 
-  <rect class="dg-group" x="20" y="170" width="420" height="230" rx="3" />
-  <text class="dg-tag" x="32" y="188">permissioned blockchain</text>
+  <rect class="dg-group" x="20" y="172" width="502" height="200" rx="3" />
+  <text class="dg-tag" x="32" y="192">smart contracts · local Hardhat chain</text>
 
-  <rect class="dg-box dg-box--accent" x="36" y="200" width="388" height="76" rx="3" />
-  <text class="dg-label" x="230" y="230" text-anchor="middle">Smart contracts</text>
-  <text class="dg-sub" x="230" y="250" text-anchor="middle">consent and access decisions</text>
+  {contracts.map((c) => (
+    <g>
+      <rect class="dg-box dg-box--accent" x={c.x} y={c.y} width={c.w} height="56" rx="3" />
+      <text class="dg-label" x={c.x + c.w / 2} y={c.y + 25} text-anchor="middle" style="font-size: 13px">{c.name}</text>
+      <text class="dg-sub" x={c.x + c.w / 2} y={c.y + 43} text-anchor="middle">{c.sub}</text>
+    </g>
+  ))}
+  <path class="dg-edge dg-edge--dashed" d="M271 262 V298" marker-end="url(#cc-arrow)" />
+  <path class="dg-edge dg-edge--dashed" d="M186 328 H194" marker-end="url(#cc-arrow)" />
 
-  <rect class="dg-box dg-box--accent" x="36" y="300" width="388" height="76" rx="3" />
-  <text class="dg-label" x="230" y="330" text-anchor="middle">Record hashes</text>
-  <text class="dg-sub" x="230" y="350" text-anchor="middle">cryptographic hash per record</text>
+  <rect class="dg-box" x="560" y="206" width="180" height="150" rx="3" />
+  <text class="dg-label" x="650" y="270" text-anchor="middle">Encrypted</text>
+  <text class="dg-label" x="650" y="288" text-anchor="middle">blob store</text>
+  <text class="dg-sub" x="650" y="308" text-anchor="middle">off-chain</text>
 
-  <rect class="dg-box" x="500" y="200" width="240" height="176" rx="3" />
-  <text class="dg-label" x="620" y="280" text-anchor="middle">Encrypted off-chain</text>
-  <text class="dg-label" x="620" y="298" text-anchor="middle">storage</text>
-  <text class="dg-sub" x="620" y="318" text-anchor="middle">the records themselves</text>
-
-  <path class="dg-edge dg-edge--dashed" d="M424 338 H498" marker-end="url(#cc-arrow)" />
-  <text class="dg-sub" x="432" y="330">refers to</text>
+  <path class="dg-edge dg-edge--dashed" d="M506 234 H558" marker-end="url(#cc-arrow)" />
+  <text class="dg-sub" x="528" y="226">hash</text>
 </svg>

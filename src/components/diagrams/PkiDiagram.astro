@@ -1,0 +1,71 @@
+---
+// PKI trust framework: enrolment, signed requests through the gateway, revocation push, federation.
+---
+<svg viewBox="0 0 760 450" role="img" aria-labelledby="pki-title" xmlns="http://www.w3.org/2000/svg">
+  <title id="pki-title">PKI trust framework for AI agents</title>
+  <defs>
+    <marker id="pki-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="dg-arrow" d="M0 0 L10 5 L0 10 z" />
+    </marker>
+  </defs>
+
+  <rect class="dg-group" x="20" y="20" width="560" height="336" rx="3" />
+  <text class="dg-tag" x="32" y="40">organisation A</text>
+
+  <rect class="dg-box dg-box--proposed" x="40" y="60" width="220" height="44" rx="3" />
+  <text class="dg-label" x="150" y="80" text-anchor="middle">Root CA</text>
+  <text class="dg-sub" x="150" y="96" text-anchor="middle">key kept offline</text>
+
+  <rect class="dg-box dg-box--accent" x="40" y="124" width="220" height="56" rx="3" />
+  <text class="dg-label" x="150" y="148" text-anchor="middle">Registration Authority</text>
+  <text class="dg-sub" x="150" y="166" text-anchor="middle">token + CSR check</text>
+
+  <rect class="dg-box dg-box--accent" x="40" y="200" width="220" height="60" rx="3" />
+  <text class="dg-label" x="150" y="224" text-anchor="middle">Issuing CA</text>
+  <text class="dg-sub" x="150" y="242" text-anchor="middle">CRL · OCSP · signed notices</text>
+
+  <path class="dg-edge" d="M150 104 V122" marker-end="url(#pki-arrow)" />
+  <path class="dg-edge" d="M150 180 V198" marker-end="url(#pki-arrow)" />
+
+  <rect class="dg-box" x="320" y="60" width="240" height="60" rx="3" />
+  <text class="dg-label" x="440" y="85" text-anchor="middle">Agent A</text>
+  <text class="dg-sub" x="440" y="103" text-anchor="middle">key in file or PKCS#11 token</text>
+
+  <path class="dg-edge" d="M320 100 H290 V152 H262" marker-end="url(#pki-arrow)" />
+  <text class="dg-sub" x="270" y="140">1</text>
+  <path class="dg-edge" d="M262 230 H300 V112 H318" marker-end="url(#pki-arrow)" />
+  <text class="dg-sub" x="270" y="222">2</text>
+
+  <rect class="dg-box dg-box--accent" x="320" y="240" width="240" height="72" rx="3" />
+  <text class="dg-label" x="440" y="266" text-anchor="middle">Agent B</text>
+  <text class="dg-label" x="440" y="284" text-anchor="middle">Verification Gateway</text>
+  <text class="dg-sub" x="440" y="302" text-anchor="middle">10 ordered checks</text>
+
+  <path class="dg-edge" d="M520 120 V238" marker-end="url(#pki-arrow)" />
+  <text class="dg-sub" x="512" y="190" text-anchor="end">3 signed request,</text>
+  <text class="dg-sub" x="512" y="204" text-anchor="end">mTLS 1.3,</text>
+  <text class="dg-sub" x="512" y="218" text-anchor="end">OCSP staple</text>
+  <path class="dg-edge" d="M350 240 V122" marker-end="url(#pki-arrow)" />
+  <text class="dg-sub" x="358" y="150">4 signed</text>
+  <text class="dg-sub" x="358" y="164">reply</text>
+
+  <path class="dg-edge dg-edge--dashed" d="M150 260 V290 H318" marker-end="url(#pki-arrow)" />
+  <text class="dg-sub" x="160" y="284">5 revocation push</text>
+
+  <rect class="dg-group" x="600" y="20" width="140" height="336" rx="3" />
+  <text class="dg-tag" x="612" y="40">organisation B</text>
+  <rect class="dg-box" x="614" y="60" width="112" height="56" rx="3" />
+  <text class="dg-label" x="670" y="84" text-anchor="middle">CA</text>
+  <text class="dg-sub" x="670" y="102" text-anchor="middle">own root</text>
+  <rect class="dg-box" x="614" y="248" width="112" height="56" rx="3" />
+  <text class="dg-label" x="670" y="272" text-anchor="middle">Agent X</text>
+  <text class="dg-sub" x="670" y="290" text-anchor="middle">federated</text>
+  <path class="dg-edge" d="M670 116 V246" marker-end="url(#pki-arrow)" />
+
+  <path class="dg-edge dg-edge--dashed" d="M562 276 H612" marker-start="url(#pki-arrow)" marker-end="url(#pki-arrow)" />
+  <text class="dg-tag" x="670" y="330" text-anchor="middle">roots exchanged</text>
+
+  <rect class="dg-box" x="20" y="376" width="720" height="56" rx="3" />
+  <text class="dg-label" x="380" y="400" text-anchor="middle">Web console</text>
+  <text class="dg-sub" x="380" y="418" text-anchor="middle">send signed requests · attack lab · revoke · certificates, CRL and audit logs</text>
+</svg>

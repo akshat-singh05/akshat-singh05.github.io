@@ -6,6 +6,7 @@ import Figure from '../../components/Figure.astro';
 import DigitalTwinDiagram from '../../components/diagrams/DigitalTwinDiagram.astro';
 import GhaOptimizerDiagram from '../../components/diagrams/GhaOptimizerDiagram.astro';
 import CareChainDiagram from '../../components/diagrams/CareChainDiagram.astro';
+import PkiDiagram from '../../components/diagrams/PkiDiagram.astro';
 import { projects, type DiagramId, type Project } from '../../data/projects';
 import { url } from '../../lib/url';
 
@@ -36,7 +37,13 @@ const diagrams: Record<DiagramId, { component: typeof DigitalTwinDiagram; label:
     component: CareChainDiagram,
     label: 'CareChain architecture diagram',
     caption:
-      'Patients use a React frontend backed by a Node.js and Express server. Consent and access decisions are held in smart contracts on a permissioned blockchain. The records stay encrypted in off-chain storage and are referenced on the chain by cryptographic hash.',
+      'Users in five roles work through a React front end. The Express API signs users in by role, encrypts records with AES-256-GCM and calls five smart contracts on a local Hardhat chain: CareChainRegistry, ConsentManager, RecordAnchor, EmergencyAccess and AuditLog. Encrypted records go to an off-chain blob store, and RecordAnchor keeps their hashes and Merkle roots. Consent and emergency decisions are written to the append-only AuditLog.',
+  },
+  pki: {
+    component: PkiDiagram,
+    label: 'PKI trust framework architecture diagram',
+    caption:
+      'Agent A sends a CSR and enrolment token to the Registration Authority (1) and receives a certificate from the issuing CA (2). It sends a signed request over mutual TLS 1.3 with a stapled OCSP answer (3), and Agent B’s Verification Gateway runs ten checks before returning a signed reply (4). On revocation the CA pushes a signed notice to gateways (5). A second organisation is trusted by exchanging root certificates. A web console drives the whole system.',
   },
 };
 
@@ -92,6 +99,17 @@ const description = `${project.title}: ${project.summary}`.slice(0, 158).replace
           <Figure label={diagram.label} caption={diagram.caption}>
             <Diagram />
           </Figure>
+        </div>
+      </section>
+    )}
+
+    {project.results && project.results.length > 0 && (
+      <section class="detail-section" aria-labelledby="results">
+        <h2 id="results">Measured results</h2>
+        <div class="detail-section__body">
+          <ul class="row__list">
+            {project.results.map((r) => <li>{r}</li>)}
+          </ul>
         </div>
       </section>
     )}

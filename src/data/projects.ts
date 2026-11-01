@@ -1,6 +1,6 @@
 import type { Status } from './types';
 
-export type DiagramId = 'digital-twin' | 'gha-optimizer' | 'carechain';
+export type DiagramId = 'digital-twin' | 'gha-optimizer' | 'carechain' | 'pki';
 
 export interface Screenshot {
   src: string;
@@ -25,6 +25,8 @@ export interface Project {
   contributions?: string[];
   /** Plain list for coursework entries without a detail page. */
   items?: string[];
+  /** Measured results, each traceable to the project's repository. */
+  results?: string[];
   stack: string[];
   repo?: string;
   /** "What is not yet known or measured". Omit when there is nothing to say. */
@@ -102,26 +104,37 @@ export const projects: Project[] = [
     slug: 'carechain',
     title: 'CareChain',
     fullTitle: 'CareChain: Decentralized Healthcare Information Exchange',
-    status: { label: 'Presented', kind: 'done' },
+    status: { label: 'Research prototype', kind: 'done' },
     record: 'BCSE329P',
     context: 'BCSE329P / BCSE329L, Blockchain and Distributed Ledger Technology Lab',
     summary:
-      'A platform where patients control who can read their records. A permissioned blockchain holds consent and access decisions through smart contracts. The records stay encrypted off-chain and are referenced by cryptographic hash.',
+      'A research prototype where patients decide who may read their health records, for how long and for what purpose. Records are encrypted off-chain. The blockchain stores only hashes, pointers and Merkle roots, and keeps an audit trail of every access, including emergency break-glass access.',
+    overview: [
+      'A research prototype where patients decide who may read their health records, for how long and for what purpose. Records are encrypted with AES-256-GCM and stored off-chain. The blockchain stores only hashes, pointers and Merkle roots, and keeps an append-only audit trail of every access.',
+      'Consent is attribute-based: a patient grants a provider access for a time window, a stated purpose and a record scope, and the smart contract checks all three on every access. Emergency responders can override consent through break-glass access, which requires a reason, writes a flagged audit entry, notifies the patient and is rate-limited per responder. On every read the stored content is re-hashed and compared with the anchored hash, so tampered content is rejected.',
+    ],
     modules: [
-      { name: 'Permissioned blockchain', text: 'Holds consent and access decisions.' },
-      { name: 'Smart contracts', text: 'Encode the consent and access decisions.' },
-      { name: 'Cryptographic hashes', text: 'Reference each off-chain record from the chain.' },
-      { name: 'Encrypted off-chain storage', text: 'Holds the records themselves.' },
-      { name: 'React frontend', text: 'The web interface.' },
-      { name: 'Node.js and Express backend', text: 'The server side of the platform.' },
+      { name: 'CareChainRegistry', text: 'Identities and roles: patient, provider, emergency responder, auditor, admin.' },
+      { name: 'ConsentManager', text: 'Grants, revokes and checks consent, and logs every access decision.' },
+      { name: 'RecordAnchor', text: 'Anchors single record hashes or Merkle batches and verifies inclusion proofs.' },
+      { name: 'EmergencyAccess', text: 'Break-glass access with a mandatory reason, rate limit and notification flag.' },
+      { name: 'AuditLog', text: 'Append-only trail, written only by authorised contracts.' },
+      { name: 'Express API', text: 'Role-based sign-in, record encryption and contract calls.' },
+      { name: 'React front end', text: 'The interface for all five roles.' },
     ],
     contributions: [
       'Worked on the project as part of a three-person team.',
       'Built the 20-slide presentation deck covering architecture, smart contracts, patient consent models, security and regulatory compliance.',
     ],
-    stack: ['React', 'Node.js', 'Express', 'Smart contracts', 'Permissioned blockchain'],
+    results: [
+      'Merkle-batched anchoring cuts the gas cost per record by roughly 62× at a batch size of 50.',
+      '29 smart-contract tests, including negative cases, and 44 end-to-end checks across all five roles.',
+      'Benchmarks for anchoring cost, consent-check cost, encryption overhead, latency, throughput and concurrency, with scripts and raw results in the repository.',
+    ],
+    stack: ['Solidity', 'OpenZeppelin', 'Hardhat', 'Node.js', 'Express', 'ethers.js', 'React', 'Vite', 'AES-256-GCM'],
     repo: 'https://github.com/akshat-singh05/carechain',
-    unknowns: 'The accompanying paper is a draft and has not been published.',
+    unknowns:
+      'The prototype runs on a local single-node Hardhat chain, not a permissioned production network. The backend holds the record encryption keys, and all data is synthetic. The accompanying paper is a draft and has not been published.',
     diagram: 'carechain',
     hasPage: true,
     screenshots: [],
@@ -141,13 +154,37 @@ export const projects: Project[] = [
   {
     slug: 'pki-ai-agents',
     title: 'Securing AI Agents Using Public Key Infrastructure',
-    status: { label: 'Presentation done', kind: 'done' },
+    status: { label: 'Course prototype', kind: 'done' },
     record: 'BCSE330L',
-    context: 'BCSE330L',
+    context: 'BCSE330L Public Key Infrastructure and Trust Management',
     summary:
-      'A trust framework giving autonomous AI agents verifiable identities, using digital certificates, cryptographic authentication and digital signatures so other systems can check who an agent is. I developed the technical concept and prepared the presentation. A conference paper and a basic working implementation are planned.',
-    stack: ['PKI', 'Digital certificates', 'Digital signatures'],
-    hasPage: false,
+      'A trust framework that gives autonomous AI agents verifiable identities. Each agent gets an X.509 certificate from a two-level certificate authority, talks to its peers over mutual TLS 1.3, signs every request, and is checked by a verification gateway before any work is done.',
+    overview: [
+      'A trust framework that gives autonomous AI agents verifiable identities, so other systems can check who an agent is before acting on its requests. Each agent gets an X.509 certificate from a two-level certificate authority, talks to its peers over mutual TLS 1.3 and signs every request and reply.',
+      'A verification gateway checks the certificate chain, revocation status, identity, signature, freshness and replay before any work is done. Revocation works in three layers: signed notices pushed by the CA, a short-lived OCSP answer stapled to every request, and a CRL as the fallback. Two organisations can trust each other by exchanging only their root certificates. A web console drives the system and includes an attack lab.',
+    ],
+    modules: [
+      { name: 'Certificate authority', text: 'Offline root, issuing CA and short-lived agent certificates (ECDSA P-256).' },
+      { name: 'Registration Authority', text: 'Enrolment token, proof of possession through a CSR, and a namespace pinned per CA.' },
+      { name: 'Agents', text: 'Keep their key in a file or a PKCS#11 token, and renew certificates automatically.' },
+      { name: 'Verification Gateway', text: 'Ten ordered checks that fail closed, with a chain cache.' },
+      { name: 'Revocation', text: 'CA-signed push notices, stapled OCSP and CRL.' },
+      { name: 'Federation', text: 'A second organisation trusted through exchanged roots, limited by namespace.' },
+      { name: 'Web console', text: 'Send signed requests, run eight attacks, revoke agents and read audit logs.' },
+    ],
+    contributions: ['Developed the technical concept.', 'Prepared the presentation.'],
+    results: [
+      'ECDSA P-256 with session resumption made the mutual-TLS handshake 65% faster than a full RSA-2048 handshake (range 57–75%, one laptop over loopback).',
+      'A revoked agent is rejected by a peer a median 104 ms after the revoke call (loopback).',
+      'A stapled OCSP answer stays about 316 bytes, while a CRL grows to 530 KB at 10,000 revocations.',
+      '54 tests pass on Windows 11, and 59 including five HSM tests on Debian in Docker.',
+    ],
+    stack: ['Python', 'X.509', 'ECDSA P-256', 'Mutual TLS 1.3', 'OCSP', 'CRL', 'PKCS#11', 'SQLite', 'Docker'],
+    unknowns:
+      'Everything was tested on one physical machine. The network test used containers on a virtual network with emulated delay, not a wide-area path. Key storage in a token was tested only against SoftHSM2, a software token. A conference paper is planned.',
+    diagram: 'pki',
+    hasPage: true,
+    screenshots: [],
   },
   {
     slug: 'blockchain-labs',
